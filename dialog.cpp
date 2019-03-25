@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "QMessageBox"
+#include <QThread>
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
@@ -11,6 +12,7 @@ Dialog::Dialog(QWidget *parent) :
     ui->btnStop->setEnabled(false);
     ui->groupBoxSetIp->setEnabled(false);
     ui->groupBoxSetTime->setEnabled(false);
+    ui->btnSendYxt->setEnabled(false);
     WaitForSetTimeRentrn.setSingleShot(true);
     connect(&WaitForSetTimeRentrn,SIGNAL(timeout()),this,SLOT(onRentrnErrorTimer()));
     WaitForSetYxtRentrn.setSingleShot(true);
@@ -73,9 +75,42 @@ void Dialog::initUi()
         hbox->addWidget(data);
         vBoxD->addLayout(hbox);
     }
-    ui->groupBoxA->setLayout(vboxA);
+    ui->groupBoxA->setLayout(vBoxA);
     ui->groupBoxD->setLayout(vBoxD);
     //=======YXT===========
+
+
+
+
+    vBoxYxt[7]=new QVBoxLayout;
+    for(int i=0;i<7;i++)
+    {
+        gBox[i]=new QGroupBox;
+        vBoxYxt[i]=new QVBoxLayout;
+        for(int j=0;j<5;j++)
+        {
+            timeLine[i][j]=new TimeLine();
+            timeLine[i][j]->day=i;
+            timeLine[i][j]->line=j;
+            timeLine[i][j]->initThis();
+            vBoxYxt[i]->addWidget(timeLine[i][j]);
+
+        }
+        gBox[i]->setLayout(vBoxYxt[i]);
+        vBoxYxt[7]->addWidget(gBox[i]);
+    }
+
+
+    gBox[0]->setTitle("星期一");
+    gBox[1]->setTitle("星期二");
+    gBox[2]->setTitle("星期三");
+    gBox[3]->setTitle("星期四");
+    gBox[4]->setTitle("星期五");
+    gBox[5]->setTitle("星期六");
+    gBox[6]->setTitle("星期日");
+
+    ui->scrollAreaWidgetContents->setLayout(vBoxYxt[7]);
+
 }
 Dialog::~Dialog()
 {
@@ -92,13 +127,16 @@ void Dialog::on_btnLink_clicked()
         ui->btnLink->setEnabled(false);
         ui->txtNowIp->setEnabled(false);
         ui->txtNowPort->setEnabled(false);
+
         socket=new QUdpSocket;
         socket->bind(port);
         connect(socket,SIGNAL(readyRead()),this,SLOT(onSockedReceibedData()));
         ui->btnStop->setEnabled(true);
         ui->groupBoxSetIp->setEnabled(true);
         ui->groupBoxSetTime->setEnabled(true);
+        ui->btnSendYxt->setEnabled(true);
     }
+
     else
     {
         QMessageBox::information(this,"错误","参数设置有误！");
@@ -117,6 +155,7 @@ void Dialog::on_btnStop_clicked()
     ui->btnLink->setEnabled(true);
     ui->txtNowIp->setEnabled(true);
     ui->txtNowPort->setEnabled(true);
+    ui->btnSendYxt->setEnabled(false);
     WaitForSetIpRentrn.stop();
     WaitForSetTimeRentrn.stop();
     WaitForSetYxtRentrn.stop();
@@ -204,7 +243,7 @@ void Dialog::on_btnSendTime_clicked()
     ch[1]=(char)0x0A;
     {
         int tmp=ui->txtYear->text().toInt();
-        if(tmp>0&&tmp<99)
+        if(tmp>=0&&tmp<99)
         {
            ch[2]=(char)tmp;
         }
@@ -244,7 +283,7 @@ void Dialog::on_btnSendTime_clicked()
 
     {
         int tmp=ui->txtHour->text().toInt();
-        if(tmp>0&&tmp<25)
+        if(tmp>=0&&tmp<25)
         {
            ch[5]=(char)tmp;
         }
@@ -257,7 +296,7 @@ void Dialog::on_btnSendTime_clicked()
     }
     {
         int tmp=ui->txtMIn->text().toInt();
-        if(tmp>0&&tmp<60)
+        if(tmp>=0&&tmp<60)
         {
            ch[6]=(char)tmp;
         }
@@ -270,7 +309,7 @@ void Dialog::on_btnSendTime_clicked()
     }
     {
         int tmp=ui->txtSec->text().toInt();
-        if(tmp>0&&tmp<60)
+        if(tmp>=0&&tmp<60)
         {
            ch[7]=(char)tmp;
         }
@@ -325,17 +364,49 @@ void Dialog::refTime()
         ui->txtSec->setText(time.toString("ss"));
     }
 }
+void Dialog::on_btnSendYxt_clicked()
+{
+    ui->btnSendYxt->setEnabled(false);
+    sendYxt(0);
 
+}
+void Dialog::sendYxt(int week)
+{
+    char ch[44];
+    ch[0]=(char)0xB2;
+    ch[1]=(char)0x2C;
+    for(int i=0;i<5;i++)
+    {
+        ch[i*6+2]=timeLine[week][i]->startTime.hour();
+        ch[i*6+3]=timeLine[week][i]->startTime.minute();
+        ch[i*6+4]=timeLine[week][i]->startTime.second();
+
+        ch[i*6+5]=timeLine[week][i]->endTime.hour();
+        ch[i*6+6]=timeLine[week][i]->endTime.minute();
+        ch[i*6+7]=timeLine[week][i]->endTime.second();
+
+        ch[32+i]=timeLine[week][i]->powerLevel;
+        ch[37+i]=timeLine[week][i]->isUsing;
+    }
+    ch[42]=(char)week+1;
+    ch[43]=(char)0xE5;
+    SendData(QByteArray(ch,44));
+    WaitForSetYxtRentrn.start(2000);
+
+}
 void Dialog::onRentrnErrorYxt()
 {
-
+    QMessageBox::information(this,"错误","运行图下发失败！");
+    ui->btnSendYxt->setEnabled(true);
 }
 void Dialog::onSockedReceibedData()
 {
     unsigned char ch[10240];
-    if(socket->hasPendingDatagrams())
+
+    while(socket->bytesAvailable())
     {
         int realSize=socket->readDatagram((char*)ch,10240);
+        qDebug()<<realSize;
         if(realSize==5)
         {
             if(ch[0]==178&&ch[4]==229)
@@ -344,12 +415,37 @@ void Dialog::onSockedReceibedData()
                 {
                     //time
                     WaitForSetTimeRentrn.stop();
-                    QMessageBox::about(this,"成功","修改成功！");
+                    QMessageBox::about(NULL,"成功","修改成功！");
+                    ui->groupBoxSetTime->setEnabled(true);
+                    qDebug()<<"It's good packge! size="<<realSize;
+                    qDebug()<<QByteArray((char*)ch,realSize).toHex();
 
                 }
                 else if(ch[2]==0x2C)
                 {
                     //yxt
+
+                    if(ch[3]<7)
+                    {
+                        WaitForSetYxtRentrn.stop();
+                        sendYxt(ch[3]);
+                        WaitForSetYxtRentrn.start(2000);
+                        qDebug()<<"It's good packge! size="<<realSize;
+                        qDebug()<<QByteArray((char*)ch,realSize).toHex();
+                    }
+                    else if(ch[3]==7)
+                    {
+                        WaitForSetYxtRentrn.stop();
+                        QMessageBox::about(this,"成功","运行图下发成功！");
+                        ui->btnSendYxt->setEnabled(true);
+                        qDebug()<<"It's good packge! size="<<realSize;
+                        qDebug()<<QByteArray((char*)ch,realSize).toHex();
+                    }
+                    else
+                    {
+                        qDebug()<<"It's data error packge! size="<<realSize;
+                        qDebug()<<QByteArray((char*)ch,realSize).toHex();
+                    }
                 }
                 else
                 {
@@ -379,11 +475,11 @@ void Dialog::onSockedReceibedData()
                 {
                     if(ch[i+18]==1)
                     {
-                        tsData.digitalCh[i]==false;
+                        tsData.digitalCh[i]=false;
                     }
                     else if(ch[i+18]==0)
                     {
-                        tsData.digitalCh[i]==true;
+                        tsData.digitalCh[i]=true;
                     }
                     else
                     {
@@ -408,10 +504,14 @@ void Dialog::onSockedReceibedData()
             qDebug()<<QByteArray((char*)ch,realSize).toHex();
         }
     }
+    /*
     else
     {
-        socket->readDatagram((char*)ch,10240);
+        int realSize=socket->readDatagram((char*)ch,10240);
+        qDebug()<<"It's ???? packge! size="<<realSize;
+        qDebug()<<QByteArray((char*)ch,realSize).toHex();
     }
+    */
 }
 void Dialog::SendData(QByteArray ba)
 {
@@ -420,4 +520,6 @@ void Dialog::SendData(QByteArray ba)
         socket->writeDatagram(ba,QHostAddress( ui->txtNowIp->text()),ui->txtNowPort->text().toInt());
     }
 }
+
+
 

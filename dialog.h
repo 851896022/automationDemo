@@ -11,6 +11,9 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QList>
+#include <QDebug>
+#include <QGroupBox>
+#include <QFrame>
 namespace Ui {
 class Dialog;
 }
@@ -28,8 +31,8 @@ class TsData
 {
 public:
     TsData() {}
-    float analogCh[16]=0;
-    bool digitalCh[8]=true;
+    float analogCh[16];
+    bool digitalCh[8];
     State state=Error;
 };
 
@@ -58,6 +61,9 @@ public:
     QVBoxLayout *vBoxA;
     QVBoxLayout *vBoxD;
 
+    QVBoxLayout *vBoxYxt[8];
+    TimeLine *timeLine[7][5];
+    QGroupBox *gBox[7];
 private slots:
     void initUi();
     void on_btnLink_clicked();
@@ -76,6 +82,8 @@ private slots:
 
     void refTime();
     void SendData(QByteArray ba);
+    void on_btnSendYxt_clicked();
+    void sendYxt(int week);
 private:
     Ui::Dialog *ui;
 };

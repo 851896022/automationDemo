@@ -14,11 +14,12 @@ class TimeLine : public QFrame
 public:
     explicit TimeLine(QWidget *parent = 0);
     ~TimeLine();
-    int No;
+    int line;
+    int day;
     QTime startTime;
     QTime endTime;
     int powerLevel=0;
-    bool isUsing=0;
+    int  isUsing=0;
 private slots:
     void on_timeEditStart_timeChanged(const QTime &time);
 
@@ -27,7 +28,8 @@ private slots:
     void on_power_currentIndexChanged(int index);
 
     void on_checkBosIsUseing_stateChanged(int arg1);
-
+public slots:
+    void initThis();
 private:
     Ui::TimeLine *ui;
 };
