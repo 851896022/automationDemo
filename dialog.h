@@ -6,9 +6,28 @@
 #include <QHostAddress>
 #include <QTimer>
 #include <QDateTime>
+#include "timeline.h"
 namespace Ui {
 class Dialog;
 }
+enum State
+{
+    Error,
+    HighPower,
+    MidPower,
+    LowPower,
+    Close
+
+};
+
+class TsData
+{
+public:
+    TsData() {}
+    float analogCh[16]=0;
+    bool digitalCh[8]=true;
+    State state=Error;
+};
 
 class Dialog : public QDialog
 {
@@ -18,7 +37,7 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
     QUdpSocket *socket=NULL;
-
+    TsData tsData;
     QTimer WaitForSetIpRentrn;
     QTimer WaitForSetTimeRentrn;
     QTimer WaitForSetYxtRentrn;

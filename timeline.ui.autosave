@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TimeLine</class>
+ <widget class="QFrame" name="TimeLine">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>412</width>
+    <height>38</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>开机时间</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTimeEdit" name="timeEditStart">
+     <property name="currentSection">
+      <enum>QDateTimeEdit::SecondSection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>hh:mm:ss</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>关机时间</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTimeEdit" name="timeEditEnd">
+     <property name="currentSection">
+      <enum>QDateTimeEdit::SecondSection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>hh:mm:ss</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="power">
+     <item>
+      <property name="text">
+       <string>高功率</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>中功率</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>低功率</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBosIsUseing">
+     <property name="text">
+      <string>启用</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
