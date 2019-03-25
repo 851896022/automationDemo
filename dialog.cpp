@@ -23,15 +23,15 @@ Dialog::Dialog(QWidget *parent) :
 void Dialog::initUi()
 {
     //======show===========
-    NameListA<<"发射功率（单位：KW）"
-            <<"反射功率（单位：KW）"
-           <<"电源电流"
-          <<"电源电压（单位：V）"
-         <<"射频驱动（单位：V）"
-        <<"网络驻波（单位：V）"
-       <<"天线驻波（单位：V）"
-      <<"+22V（单位：V）"
-     <<"+8V（单位：V）"
+    NameListA<<"发射功率（KW）"
+            <<"反射功率（KW）"
+           <<"电源电流（A）"
+          <<"电源电压（V）"
+         <<"射频驱动（V）"
+        <<"网络驻波（V）"
+       <<"天线驻波（V）"
+      <<"+22V（V）"
+     <<"+8V（V）"
     <<"预留"
     <<"预留"
     <<"预留"
@@ -47,6 +47,11 @@ void Dialog::initUi()
         <<"天线驻波比"
        <<"AD转换错误"
       <<"射频欠激";
+    NameListState<<"无效状态"
+                <<"高功率"
+               <<"中功率"
+              <<"低功率"
+             <<"关机";
     vBoxA=new QVBoxLayout;
     vBoxD=new QVBoxLayout;
     for(int i=0;i<16;i++)
@@ -77,6 +82,7 @@ void Dialog::initUi()
     }
     ui->groupBoxA->setLayout(vBoxA);
     ui->groupBoxD->setLayout(vBoxD);
+
     //=======YXT===========
 
 
@@ -406,7 +412,7 @@ void Dialog::onSockedReceibedData()
     while(socket->bytesAvailable())
     {
         int realSize=socket->readDatagram((char*)ch,10240);
-        qDebug()<<realSize;
+        //qDebug()<<realSize;
         if(realSize==5)
         {
             if(ch[0]==178&&ch[4]==229)
@@ -463,13 +469,30 @@ void Dialog::onSockedReceibedData()
         {
             if(ch[0]==178&&ch[27]==229)
             {
+                QString msg;
                 for(int i=0;i<12;i++)
                 {
-                    tsData.analogCh[i]=ch[i+2]/10.0;
+                    if(i==2||i==3)
+                    {
+                        tsData.analogCh[i]=ch[i+2];
+                        msg+=QString::number(tsData.analogCh[i])+"|";
+                        aData[i]->setText(QString::number(tsData.analogCh[i]));
+                    }
+                    else
+                    {
+                        tsData.analogCh[i]=ch[i+2]/10.0;
+                        msg+=QString::number(tsData.analogCh[i])+"|";
+                        aData[i]->setText(QString::number(tsData.analogCh[i]));
+                    }
+
+
                 }
+                ui->powerBar->setValue(tsData.analogCh[0]*10);
                 for(int i=12;i<16;i++)
                 {
                     tsData.analogCh[i]=0-(ch[i+2]/10.0);
+                    msg+=QString::number(tsData.analogCh[i])+"|";
+                    aData[i]->setText(QString::number(tsData.analogCh[i]));
                 }
                 for(int i=0;i<8;i++)
                 {
@@ -489,8 +512,23 @@ void Dialog::onSockedReceibedData()
                         tsData=tmp;
                         break;
                     }
+                    if(tsData.digitalCh[i])
+                    {
+                        msg+="TRUE|";
+                        DData[i]->setText("正常");
+                    }
+                    else
+                    {
+                        msg+="FALSE|";
+                        DData[i]->setText("异常");
+                    }
+
                 }
                 tsData.state=State(ch[26]);
+                ui->labelTsState->setText(NameListState.at(tsData.state));
+                msg+=QString::number(tsData.state)+"|";
+                qDebug()<<msg;
+
             }
             else
             {

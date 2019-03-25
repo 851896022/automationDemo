@@ -51,6 +51,7 @@ public:
     QTimer refTimeCount;
     QStringList NameListA;
     QStringList NameListD;
+    QStringList NameListState;
 
     QList<QLabel*> aName;
     QList<QLabel*> DName;

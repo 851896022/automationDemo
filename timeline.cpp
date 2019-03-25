@@ -11,7 +11,7 @@ TimeLine::TimeLine(QWidget *parent) :
 }
 void TimeLine::initThis()
 {
-    QSettings settings(QApplication::applicationDirPath()+QString("/test.ini"), QSettings::IniFormat);
+    QSettings settings(QApplication::applicationDirPath()+QString("/test")+QString::number(day)+QString(".ini"), QSettings::IniFormat);
     {
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"startTime";
@@ -63,7 +63,7 @@ TimeLine::~TimeLine()
 void TimeLine::on_timeEditStart_timeChanged(const QTime &time)
 {
     startTime=time;
-    QSettings settings(QApplication::applicationDirPath()+QString("/test.ini"), QSettings::IniFormat);
+    QSettings settings(QApplication::applicationDirPath()+QString("/test")+QString::number(day)+QString(".ini"), QSettings::IniFormat);
     {
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"startTime";
@@ -74,7 +74,7 @@ void TimeLine::on_timeEditStart_timeChanged(const QTime &time)
 void TimeLine::on_timeEditEnd_timeChanged(const QTime &time)
 {
     endTime=time;
-    QSettings settings(QApplication::applicationDirPath()+QString("/test.ini"), QSettings::IniFormat);
+    QSettings settings(QApplication::applicationDirPath()+QString("/test")+QString::number(day)+QString(".ini"), QSettings::IniFormat);
     {
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"endTime";
@@ -86,7 +86,7 @@ void TimeLine::on_power_currentIndexChanged(int index)
 {
     powerLevel=index+1;
     {
-        QSettings settings(QApplication::applicationDirPath()+QString("/test.ini"), QSettings::IniFormat);
+        QSettings settings(QApplication::applicationDirPath()+QString("/test")+QString::number(day)+QString(".ini"), QSettings::IniFormat);
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"powerLevel";
         settings.setValue(str,powerLevel);
     }
@@ -103,7 +103,7 @@ void TimeLine::on_checkBosIsUseing_stateChanged(int arg1)
         isUsing=0;
     }
     {
-        QSettings settings(QApplication::applicationDirPath()+QString("/test.ini"), QSettings::IniFormat);
+        QSettings settings(QApplication::applicationDirPath()+QString("/test")+QString::number(day)+QString(".ini"), QSettings::IniFormat);
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"isUsing";
         settings.setValue(str,isUsing);
     }
