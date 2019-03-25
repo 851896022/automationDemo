@@ -7,6 +7,10 @@
 #include <QTimer>
 #include <QDateTime>
 #include "timeline.h"
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QList>
 namespace Ui {
 class Dialog;
 }
@@ -42,7 +46,20 @@ public:
     QTimer WaitForSetTimeRentrn;
     QTimer WaitForSetYxtRentrn;
     QTimer refTimeCount;
+    QStringList NameListA;
+    QStringList NameListD;
+
+    QList<QLabel*> aName;
+    QList<QLabel*> DName;
+    QList<QLabel*> aData;
+    QList<QLabel*> DData;
+    QList<QHBoxLayout*> hBoxListA;
+    QList<QHBoxLayout*> hBoxListD;
+    QVBoxLayout *vBoxA;
+    QVBoxLayout *vBoxD;
+
 private slots:
+    void initUi();
     void on_btnLink_clicked();
 
     void on_btnStop_clicked();
