@@ -16,27 +16,27 @@ void TimeLine::initThis()
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"startTime";
         QString msg=settings.value(str).toString();
-        qDebug()<<day<<line<<msg;
+        //qDebug()<<day<<line<<msg;
         ui->timeEditStart->setTime(QTime::fromString(msg,"hh:mm:ss"));
     }
     {
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"endTime";
         QString msg=settings.value(str).toString();
-        qDebug()<<day<<line<<msg;
+        //qDebug()<<day<<line<<msg;
         ui->timeEditEnd->setTime(QTime::fromString(msg,"hh:mm:ss"));
     }
     {
 
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"powerLevel";
         int msg=settings.value(str).toInt();
-        qDebug()<<day<<line<<msg;
+        //qDebug()<<day<<line<<msg;
         ui->power->setCurrentIndex(msg-1);
     }
     {
         QString str="TimeSet/d"+QString::number(day)+"l"+QString::number(line)+"isUsing";
         int msg=settings.value(str).toInt();
-        qDebug()<<day<<line<<msg;
+        //qDebug()<<day<<line<<msg;
         ui->checkBosIsUseing->setChecked(msg);
     }
 
