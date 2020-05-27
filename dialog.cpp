@@ -465,7 +465,7 @@ void Dialog::onSockedReceibedData()
                 qDebug()<<QByteArray((char*)ch,realSize).toHex();
             }
         }
-        else if(realSize==28)
+        else if(realSize==52)
         {
             if(ch[0]==178&&ch[27]==229)
             {

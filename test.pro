@@ -27,13 +27,20 @@ SOURCES += \
         main.cpp \
         dialog.cpp \
     timeline.cpp \
-    qlog.cpp
+    qlog.cpp \
+    linktest.cpp \
+    linktestparentwindow.cpp
 
 HEADERS += \
         dialog.h \
     timeline.h \
-    qlog.h
+    qlog.h \
+    linktest.h \
+    linktestparentwindow.h
 
 FORMS += \
         dialog.ui \
-    timeline.ui
+    timeline.ui \
+    linktest.ui \
+    linktestparentwindow.ui
+#CONFIG += console pro

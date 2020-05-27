@@ -33,7 +33,7 @@
    <item>
     <widget class="QTimeEdit" name="timeEditStart">
      <property name="currentSection">
-      <enum>QDateTimeEdit::SecondSection</enum>
+      <enum>QDateTimeEdit::HourSection</enum>
      </property>
      <property name="displayFormat">
       <string>hh:mm:ss</string>
@@ -53,7 +53,7 @@
    <item>
     <widget class="QTimeEdit" name="timeEditEnd">
      <property name="currentSection">
-      <enum>QDateTimeEdit::SecondSection</enum>
+      <enum>QDateTimeEdit::HourSection</enum>
      </property>
      <property name="displayFormat">
       <string>hh:mm:ss</string>
